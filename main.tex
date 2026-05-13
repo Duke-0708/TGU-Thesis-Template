@@ -1,0 +1,384 @@
+% ==================== 硕博/学术专业 切换开关 ====================
+\newif\ifdoctor
+\newif\ifacademic
+
+% --- 修改此处进行切换 ---
+% \doctortrue      % 取消注释表示“博士”，注释掉表示“硕士”
+% \doctorfalse   % 显式指定为硕士
+
+\academictrue    % 取消注释表示“学术型”，注释掉表示“专业型”
+% \academicfalse % 显式指定为专业型
+
+% ===================== 文档类型 ===================
+\documentclass[a4paper, twoside, openright, 12pt]{ctexbook}
+% ==================== 宏包引入 ====================
+\usepackage[top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm, headheight=15pt]{geometry} % 页面边距
+\usepackage{fancyhdr} % 页眉页脚设置
+\usepackage{setspace} % 行间距设置
+\usepackage{graphicx} % 插入图片
+\usepackage{caption}  % 图表标题设置
+\usepackage{amsmath}  % 数学公式
+\usepackage{titletoc} % 目录设置
+\usepackage{fontspec} % 字体设置
+\usepackage{hyperref} % 超链接设置
+\usepackage{multirow} % 用于合并答辩委员会表格行
+\usepackage{array}    % 用于表格列格式设置
+\usepackage{makecell} % 用于表格边线和排版
+\usepackage{amsmath}  % 数学公式
+\usepackage{amssymb}  % 添加这行：用于绘制 \square 方框符号
+
+% ==================== 字体与间距设置 ====================
+% 英文默认字体设置为 Times New Roman
+\setmainfont{Times New Roman}
+
+% 设置正文固定行距 20pt (近似于 \baselineskip=20pt)
+\setlength{\baselineskip}{20pt}
+\setlength{\parskip}{0pt}
+
+% ==================== 标题格式设置 ====================
+\ctexset{
+    % 一级标题 (例如：第一章) - 黑体四号，居中，段前段后18-24pt
+    chapter = {
+        name = {第,章},
+        number = \chinese{chapter},
+        format = \heiti\zihao{4}\centering,
+        beforeskip = 18pt,
+        afterskip = 24pt,
+        pagestyle = fancy, % 保证章节首页也有页眉页脚
+    },
+    % 二级标题 (例如：1.1) - 黑体四号，段前段后12-15pt
+    section = {
+        format = \heiti\zihao{4}\raggedright,
+        beforeskip = 12pt,
+        afterskip = 15pt,
+    },
+    % 三级标题 (例如：1.1.1) - 黑体小四号，段前段后6-9pt
+    subsection = {
+        format = \heiti\zihao{-4}\raggedright,
+        beforeskip = 6pt,
+        afterskip = 9pt,
+    }
+}
+
+% 图表注释宋体五号
+\DeclareCaptionFont{song5}{\songti\zihao{5}}
+\captionsetup{font=song5, labelsep=quad}
+\pagestyle{plain}
+% ==================== 页眉页脚设置 ====================
+\usepackage{fancyhdr}
+
+% 【核心终极修复】：重新定义 fancy 样式，将其封装起来，防止被 ctexbook 覆盖
+\fancypagestyle{fancy}{
+    \fancyhf{} % 清空默认设置
+    
+    % 将 chaptermark 的重定义放入 fancy 内部，每次调用 fancy 时强制生效（必须使用 ##1）
+    \renewcommand{\chaptermark}[1]{\markboth{第\chinese{chapter}章\quad ##1}{}}
+    
+    % 奇数页(O)页眉居中(C)：章节名称；偶数页(E)页眉居中(C)：利用 if 语句自动判断硕博学位
+    \fancyhead[CE]{\songti\zihao{5} 天津工业大学\ifdoctor 博士\else 硕士\fi 学位论文}
+    \fancyhead[CO]{\songti\zihao{5} \leftmark}
+    
+    % 页码：宋体6号，底部居中
+    \fancyfoot[C]{\songti\zihao{6} \thepage}
+    
+    % 恢复页眉线条
+    \renewcommand{\headrulewidth}{0.5pt}
+}
+
+% 重定义 plain 样式，确保目录页码也能应用宋体6号
+\fancypagestyle{plain}{
+    \fancyhf{} % 清空默认
+    \fancyfoot[C]{\songti\zihao{6} \thepage} % 底部居中宋体6号
+    \renewcommand{\headrulewidth}{0pt} % 目录页无页眉线
+}
+
+% 全局激活配置好的 fancy 样式
+\pagestyle{fancy}
+
+% ==================== 超链接设置 ====================
+\hypersetup{
+   colorlinks=true,
+   linkcolor=black,
+   hidelinks
+}
+
+% ==================== 编号格式 ====================
+\renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
+\renewcommand{\thefigure}{\arabic{chapter}-\arabic{figure}}
+\renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
+
+% ==================== 参考文献引用格式 ====================
+\newcommand{\upcite}[1]{\textsuperscript{\songti\cite{#1}}} % 上标引用格式
+\usepackage{natbib}  % gbt7714 依赖的基础引用宏包，必须先调用
+\usepackage{gbt7714} % 引入国标参考文献宏包
+\bibliographystyle{gbt7714-numerical} 
+% 覆盖参考文献正文字体和行距设定 (宋体小四，固定行距17pt)
+\renewcommand{\bibfont}{\songti\zihao{-4}\setlength{\baselineskip}{17pt}}
+% 设置参考文献条目之间的段前间距 (3pt)
+\setlength{\bibsep}{3pt}
+
+% ==================== 图表、公式与正文之间的间距 ====================
+% 公式前后的一行间距 (20pt)
+\setlength{\abovedisplayskip}{20pt}
+\setlength{\belowdisplayskip}{20pt}
+% 图表等浮动体与正文之间的间距
+\setlength{\intextsep}{20pt}
+\setlength{\textfloatsep}{20pt}
+
+% ==================== 开始文档 ====================
+\begin{document}
+
+% -------------------- 前置部分 --------------------
+\frontmatter
+% 目录之前不含页眉和页码
+\pagestyle{empty} 
+
+% 1. 封面
+\begin{titlepage}
+    % --- 1. 顶部：分类号与学校代码 ---
+    \noindent
+    {\songti\zihao{5} 分类号：{\makebox[3cm]{}}} \hfill 
+    {\songti\zihao{5} 学校代码：{\makebox[3cm]{10058}}}
+    
+    \vspace*{1.5cm} % 垂直间距调整
+    
+    % --- 2. 论文类别与校徽 ---
+    \noindent
+    \begin{minipage}[c]{3.5cm} % 左侧分配 3.5cm 宽度给校徽
+        \includegraphics[width=3.5cm]{figs/校徽.png}% 确保将 logo.png 放在根目录
+    \end{minipage}% 这里的 % 很重要，防止产生多余的空格
+    \begin{minipage}[c]{\dimexpr\textwidth-3.5cm\relax} % 右侧占用除去校徽后的所有剩余宽度
+        \centering % 在剩余宽度的空间内居中
+        \begin{tabular}{c}
+            % 自动判断 博士/硕士
+            {\heiti\zihao{1} \ifdoctor 博\quad 士\quad\else 硕\quad 士\quad\fi 学\quad 位\quad 论\quad 文}\\[15pt] 
+            % 自动判断 学术型/专业型
+            {\heiti\zihao{3} （\ifacademic 学术型\else 专业型\fi）}
+            
+            % 【新增逻辑】：如果是硕士（非博士）且为专业型（非学术型），则显示全日制选项
+            \ifdoctor\else
+                \ifacademic\else
+                    \\[10pt] % 换行并增加一定间距
+                    {\songti\zihao{3} $\square$\ 全\ 日\ 制\qquad $\square$\ 非\ 全\ 日\ 制}
+                \fi
+            \fi
+        \end{tabular}
+    \end{minipage}
+    
+    \vspace*{30pt}
+    
+    % --- 3. 中英文题目 ---
+    \begin{center}
+        % 中文题目：宋体二号加粗(黑体替代)
+        {\heiti\zihao{2} 论文题目（宋体二号加粗）}\\[20pt]
+        % 英文题目：Times New Roman, 14-22 pt., Bold
+        {\fontspec{Times New Roman}\fontsize{18pt}{22pt}\selectfont\bfseries 
+         English Title (Times New Roman, 14-22 pt., Bold)}
+    \end{center}
+
+    \vspace*{36pt}
+    
+    % --- 4. 作者与导师信息表 (双列均匀布局) ---
+    \begin{center}
+        {\heiti\zihao{4}
+        \renewcommand{\arraystretch}{1.6} % 设置行高
+        % 【关键修改】：使用 tabular* 配合 \textwidth 限制总宽度，\extracolsep{\fill} 自动拉伸居中间距防止溢出
+        \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l @{} c l @{} c @{}}
+            \makebox[2.8cm][s]{作\hfill 者\hfill 姓\hfill 名}： & \underline{\makebox[3.8cm]{}} & 
+            \makebox[2.8cm][s]{培\hfill 养\hfill 单\hfill 位}： & \underline{\makebox[3.8cm]{}} \\
+            
+            % 学术型显示“学科名称”，专业型显示“专业类别”
+            \makebox[2.8cm][s]{\ifacademic 学\hfill 科\hfill 名\hfill 称\else 专\hfill 业\hfill 类\hfill 别\fi}： & \underline{\makebox[3.8cm]{}} & 
+            % 学术型显示“研究方向”，专业型显示“领域（方向）”
+            \makebox[2.8cm][s]{\ifacademic 研\hfill 究\hfill 方\hfill 向\else 领\hfill 域\hfill（方向）\fi}： & \underline{\makebox[3.8cm]{}} \\
+            
+            \makebox[2.8cm][s]{指\hfill 导\hfill 教\hfill 师}： & \underline{\makebox[3.8cm]{}} & 
+            % 学术型显示“副指导教师”，专业型显示“合 作 导 师”
+            \makebox[2.8cm][s]{\ifacademic 副\hfill 指\hfill 导\hfill 教\hfill 师\else 合\hfill 作\hfill 导\hfill 师\fi}： & \underline{\makebox[3.8cm]{}} \\
+        \end{tabular*}}
+    \end{center}
+    
+    % --- 5. 答辩信息表 (带边框的完整合并表格) ---
+    \begin{center}
+        {\heiti\zihao{-4}
+        \renewcommand{\arraystretch}{1.6}
+        % 运用 array 宏包的 m{} 格式控制列宽并实现垂直居中
+        \begin{tabular}{|>{\centering\arraybackslash}m{2.5cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{4.5cm}|}
+            \hline
+            答辩日期 & \multicolumn{3}{c|}{20\quad\quad 年\quad\quad 月\quad\quad 日} \\
+            \hline
+            答辩委员会 & 姓名 & 职称 & 工作单位 \\
+            \hline
+            主席 & & & \\
+            \hline
+            % 委员需合并5行
+            \multirow{5}{*}{委员} 
+            & & & \\ \cline{2-4}
+            & & & \\ \cline{2-4}
+            & & & \\ \cline{2-4}
+            & & & \\ \cline{2-4}
+            & & & \\
+            \hline
+        \end{tabular}}
+    \end{center}
+    
+    \vfill
+    
+    % --- 6. 底部日期 ---
+    \begin{center}
+        {\songti\zihao{4} 二\ 〇\ \makebox[1.5cm]{}\ 年\ \makebox[1.5cm]{}\ 月}
+    \end{center}
+\end{titlepage}
+\cleardoublepage
+
+% 2. 独创性声明、学位论文版权使用授权书 (单面打印)
+\begin{center}
+    {\heiti\zihao{4} 独创性声明}
+\end{center}
+\vspace{10pt}
+{\songti\zihao{-4} 
+
+本人声明所呈交的学位论文是本人在导师指导下进行的研究工作和取得的研究成果,除了文中特别加以标注和致谢之处外,论文中不包含其他人已经发表或撰写过的研究成果,也不包含为获得\hspace{0.5em}{\heiti 天津工业大学}\hspace{0.5em}或其他教育机构的学位或证书而使用过的材料。与我一同工作的同志对本研究所做的任何贡献均已在论文中作了明确的说明并表示了谢意。
+
+\vspace{40pt}
+\begin{flushright}
+    学位论文作者签名：\hspace{4cm} 
+    签字日期：\hspace{1cm}年\hspace{0.5cm}月\hspace{0.5cm}日\hspace{1cm}
+\end{flushright}
+}
+\cleardoublepage % 确保单面打印，背面留白
+
+\begin{center}
+    {\heiti\zihao{4} 学位论文版权使用授权书}
+\end{center}
+\vspace{10pt}
+{\songti\zihao{-4} 
+
+本学位论文作者完全了解\hspace{0.5em}{\heiti 天津工业大学}\hspace{0.5em}有关保留、使用学位论文的规定。特授权\hspace{0.5em}{\heiti 天津工业大学}\hspace{0.5em}可以将学位论文的全部或部分内容编入有关数据库进行检索,并采用影印、缩印或扫描等复制手段保存、汇编以供查阅和借阅。同意学校向国家有关部门或机构送交论文的复印件和磁盘。
+
+(保密的学位论文在解密后适用本授权说明)
+
+\vspace{40pt}
+\noindent 学位论文作者签名：\hspace{4cm} 导师签名：\hspace{4cm}
+
+\vspace{15pt}
+\noindent 签字日期：\hspace{1cm}年\hspace{0.5cm}月\hspace{0.5cm}日\hspace{2.5cm} 签字日期：\hspace{1cm}年\hspace{0.5cm}月\hspace{0.5cm}日
+}
+\cleardoublepage % 确保单面打印，背面留白
+
+% 3. 中文摘要
+\begin{center}
+    {\heiti\zihao{4} 摘 \quad 要}
+\end{center}
+\vspace{10pt}
+{\songti\zihao{-4}
+
+中文摘要应将学位论文的内容要点简短明了地表达出来，约500～800字左右。内容应包括工作目的、研究方法、成果和结论。
+
+\vspace{20pt}
+\noindent {\heiti 关键词：} 格式要求；排版模板；天津工业大学
+}
+\cleardoublepage
+
+% 4. 英文摘要
+\begin{center}
+    {\textbf{\zihao{4} Abstract}}
+\end{center}
+\vspace{10pt}
+{\zihao{-4} % Times New Roman is already set as default main font
+
+This is the English abstract. The content should be the same as the Chinese abstract.
+
+\vspace{20pt}
+\noindent \textbf{Key Words: } Formatting; Template; Tiangong University
+}
+\cleardoublepage
+
+% 5. 目录
+\pagestyle{plain} 
+\pagenumbering{Roman} % 从此处开始页码用大写罗马数字编排
+
+{\songti\zihao{-4}    % 强制要求目录本身的字体为宋体小四号
+    \tableofcontents
+}
+\cleardoublepage
+
+% -------------------- 正文部分 --------------------
+\mainmatter
+% 恢复页眉页脚，页码从阿拉伯数字1开始连续编排
+\pagestyle{fancy}
+
+\zihao{-4}\songti % 正文字体：宋体小四号
+\setlength{\baselineskip}{20pt} % 必须紧跟在字号切换之后，确保20pt行距生效
+
+\chapter{学位论文基本要求}
+\section{硕士学位论文的基本要求}
+\subsection{理论与实际价值}
+基本论点、结论和建议有理论意义或实际价值。此处展示宋体小四号的正文排版效果。内容能反映作者掌握本学科坚实的基础理论和系统的专业知识。\upcite{Zheng_image_2011}
+
+\section{研究工作量}
+硕士研究生用于论文工作的时间一般不少于一学年。公式编号用括号括起写在右边行末，其间不加虚线：
+\begin{equation}
+    E = mc^2
+\end{equation}
+
+图、表、公式等与正文之间要有一行的间距。
+\begin{table}[htbp]
+    \centering
+    \caption{标题级别与段前段后间距表}
+    \begin{tabular}{lc}
+        \hline
+        标题级别 & 段前、段后间距 \\
+        \hline
+        大标题 & 30-36pt \\
+        一级标题 & 18-24pt \\
+        二级标题 & 12-15pt \\
+        三级标题 & 6-9pt \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\chapter{学位论文格式规范}
+\section{各部分组成结构}
+硕士学位论文要求不少于3万字，博士学位论文要求不少于5万字。一般由十部分组成。
+
+% -------------------- 后置部分 --------------------
+\backmatter
+
+% 7. 参考文献
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{参考文献} % 手动加入目录
+
+% 重定义参考文献的标题格式，严格控制段前段后 36pt
+\renewcommand{\bibsection}{
+    \par
+    \vspace*{30pt}
+    \centerline{\heiti\zihao{4} 参考文献}
+    \vspace*{36pt}
+    \par
+    \markboth{参考文献}{} % 【关键修复1】：强制将参考文献写入页眉
+}
+
+% 调用您的 .bib 文件
+\bibliography{refs}
+
+% 8. 发表论文和参加科研情况
+\chapter*{发表论文和参加科研情况} % 【修正】：加上星号，与其他后置部分保持格式统一
+\addcontentsline{toc}{chapter}{发表论文和参加科研情况}
+\markboth{发表论文和参加科研情况}{} % 【关键修复2】：强制写入当前页眉
+在此处列出在学期间发表的学术论文和参加的科研情况。
+
+% 9. 附录
+\chapter*{附录}
+\addcontentsline{toc}{chapter}{附录}
+\markboth{附录}{} % 【关键修复3】：强制写入当前页眉
+这里包含正文内不便列出的冗长公式推导、辅助性数学工具、计算程序及说明等。
+
+% 10. 致谢
+\chapter*{致谢}
+\addcontentsline{toc}{chapter}{致谢}
+\markboth{致谢}{} % 【关键修复4】：强制写入当前页眉
+致谢限一页。
+
+\end{document}
